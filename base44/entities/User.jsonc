@@ -1,0 +1,44 @@
+{
+  "name": "User",
+  "type": "object",
+  "properties": {
+    "role": {
+      "type": "string",
+      "enum": [
+        "admin",
+        "user",
+        "court_owner"
+      ],
+      "default": "user"
+    },
+    "bio": {
+      "type": "string"
+    },
+    "level": {
+      "type": "string",
+      "enum": [
+        "principiante",
+        "intermedio",
+        "avanzado",
+        "profesional"
+      ],
+      "default": "intermedio"
+    },
+    "avatar_url": {
+      "type": "string"
+    },
+    "mp_alias": {
+      "type": "string",
+      "description": "Alias de Mercado Pago del due\u00f1o de cancha"
+    },
+    "mp_cbu": {
+      "type": "string",
+      "description": "CBU/CVU de Mercado Pago del due\u00f1o de cancha"
+    },
+    "mp_verified": {
+      "type": "boolean",
+      "default": false,
+      "description": "Si los datos de MP fueron verificados"
+    }
+  }
+}

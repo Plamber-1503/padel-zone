@@ -1,0 +1,61 @@
+{
+  "name": "Court",
+  "type": "object",
+  "properties": {
+    "name": {
+      "type": "string",
+      "description": "Court name"
+    },
+    "description": {
+      "type": "string",
+      "description": "Court description"
+    },
+    "image_url": {
+      "type": "string",
+      "description": "Court photo URL"
+    },
+    "price_per_hour": {
+      "type": "number",
+      "description": "Price per hour in ARS"
+    },
+    "surface_type": {
+      "type": "string",
+      "enum": [
+        "cesped_sintetico",
+        "cemento",
+        "cristal"
+      ],
+      "description": "Surface type"
+    },
+    "is_covered": {
+      "type": "boolean",
+      "default": false,
+      "description": "Whether the court is covered"
+    },
+    "is_active": {
+      "type": "boolean",
+      "default": true,
+      "description": "Whether the court is available"
+    },
+    "owner_email": {
+      "type": "string",
+      "description": "Email of the court owner/manager"
+    },
+    "latitude": {
+      "type": "number",
+      "description": "Court latitude coordinate"
+    },
+    "longitude": {
+      "type": "number",
+      "description": "Court longitude coordinate"
+    },
+    "address": {
+      "type": "string",
+      "description": "Court address"
+    }
+  },
+  "required": [
+    "name",
+    "price_per_hour"
+  ]
+}

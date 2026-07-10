@@ -1,0 +1,84 @@
+{
+  "name": "Booking",
+  "type": "object",
+  "properties": {
+    "court_id": {
+      "type": "string",
+      "description": "Reference to the court"
+    },
+    "court_name": {
+      "type": "string",
+      "description": "Court name for display"
+    },
+    "owner_email": {
+      "type": "string",
+      "description": "Email of the court owner"
+    },
+    "date": {
+      "type": "string",
+      "format": "date",
+      "description": "Booking date"
+    },
+    "time_slot": {
+      "type": "string",
+      "description": "Time slot (e.g. 09:00)"
+    },
+    "duration_hours": {
+      "type": "number",
+      "default": 1,
+      "description": "Duration in hours"
+    },
+    "total_price": {
+      "type": "number",
+      "description": "Total price"
+    },
+    "deposit_amount": {
+      "type": "number",
+      "description": "30% deposit paid at booking"
+    },
+    "remaining_amount": {
+      "type": "number",
+      "description": "Remaining 70% to be paid"
+    },
+    "payment_deadline": {
+      "type": "string",
+      "description": "ISO datetime: booking time minus 2 hours \u2014 after this the booking expires"
+    },
+    "status": {
+      "type": "string",
+      "enum": [
+        "pendiente_aprobacion",
+        "aprobada",
+        "rechazada",
+        "confirmada",
+        "expirada",
+        "cancelada"
+      ],
+      "default": "pendiente_aprobacion"
+    },
+    "payment_status": {
+      "type": "string",
+      "enum": [
+        "pendiente",
+        "deposito_pagado",
+        "pagado_total",
+        "reembolsado"
+      ],
+      "default": "pendiente"
+    },
+    "player_name": {
+      "type": "string"
+    },
+    "player_email": {
+      "type": "string"
+    },
+    "notes": {
+      "type": "string"
+    }
+  },
+  "required": [
+    "court_id",
+    "date",
+    "time_slot"
+  ]
+}
