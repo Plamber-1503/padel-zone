@@ -1,4 +1,4 @@
-import { useQuery, useMutation, useQueryClient } from "@tanstack/react-query";
+import { useQuery, useQueryClient } from "@tanstack/react-query";
 import { base44 } from "@/api/base44Client";
 import { useAuth } from "@/lib/AuthContext";
 import { Skeleton } from "@/components/ui/skeleton";
@@ -11,7 +11,6 @@ import BookingRequestCard from "@/components/owner/BookingRequestCard";
 import MyCourtsManager from "@/components/owner/MyCourtsManager";
 import { format } from "date-fns";
 import { es } from "date-fns/locale";
-import { toast } from "sonner";
 
 export default function OwnerDashboard() {
   const { user } = useAuth();
@@ -26,27 +25,11 @@ export default function OwnerDashboard() {
     refetchInterval: 30000, // auto-refresh every 30s
   });
 
-  // Check and expire overdue bookings
-  const expireMutation = useMutation({
-    mutationFn: (id) =>
-      base44.entities.Booking.update(id, { status: "expirada" }),
-    onSuccess: () => {
-      queryClient.invalidateQueries({ queryKey: ["owner-bookings"] });
-    },
-  });
-
-  // Auto-expire bookings past their deadline
-  const now = new Date();
-  allBookings.forEach((b) => {
-    if (
-      b.status === "aprobada" &&
-      b.payment_status !== "pagado_total" &&
-      b.payment_deadline &&
-      new Date(b.payment_deadline) < now
-    ) {
-      expireMutation.mutate(b.id);
-    }
-  });
+  // NOTA: el vencimiento automático de reservas ya NO depende de que este
+  // panel esté abierto. Ahora lo hace la función de backend
+  // `base44/functions/expireBookings`, programada como cron cada 15 min.
+  // Antes, este efecto disparaba una mutación por cada reserva vencida en
+  // cada render (podía re-ejecutarse en bucle); se retiró por completo.
 
   const pending = allBookings.filter((b) => b.status === "pendiente_aprobacion");
   const approved = allBookings.filter((b) => b.status === "aprobada");

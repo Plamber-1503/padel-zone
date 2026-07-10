@@ -8,7 +8,7 @@ import { UserPlus, Mail, Lock, Loader2 } from "lucide-react";
 import { InputOTP, InputOTPGroup, InputOTPSlot } from "@/components/ui/input-otp";
 import AuthLayout from "@/components/AuthLayout";
 import GoogleIcon from "@/components/GoogleIcon";
-import { toast } from "@/components/ui/use-toast";
+import { toast } from "sonner";
 
 export default function Register() {
   const [email, setEmail] = useState("");
@@ -57,9 +57,8 @@ export default function Register() {
     setError("");
     try {
       await base44.auth.resendOtp(email);
-      toast({
-        title: "Code sent",
-        description: "Check your email for the new code.",
+      toast.success("Código reenviado", {
+        description: "Revisá tu email para ver el nuevo código.",
       });
     } catch (err) {
       setError(err.message || "Failed to resend code");

@@ -1,0 +1,32 @@
+{
+  "name": "Review",
+  "type": "object",
+  "properties": {
+    "court_id": {
+      "type": "string",
+      "description": "Cancha calificada"
+    },
+    "booking_id": {
+      "type": "string",
+      "description": "Reserva que habilita la reseña (sólo quien jugó puede calificar)"
+    },
+    "author_email": {
+      "type": "string"
+    },
+    "author_name": {
+      "type": "string"
+    },
+    "rating": {
+      "type": "number",
+      "description": "Calificación de 1 a 5"
+    },
+    "comment": {
+      "type": "string"
+    }
+  },
+  "required": [
+    "court_id",
+    "author_email",
+    "rating"
+  ]
+}

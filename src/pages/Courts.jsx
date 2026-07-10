@@ -6,7 +6,6 @@ import CourtsMap from "@/components/courts/CourtsMap";
 import { Skeleton } from "@/components/ui/skeleton";
 import { motion } from "framer-motion";
 import { MapPin, List, Map, Navigation, AlertCircle } from "lucide-react";
-import { Button } from "@/components/ui/button";
 
 const RADIUS_KM = 7;
 
@@ -27,9 +26,12 @@ export default function Courts() {
   const [userLocation, setUserLocation] = useState(null);
   const [locationStatus, setLocationStatus] = useState("idle"); // idle | loading | granted | denied
 
+  // Reforma: se agrega un límite explícito. Con muchas canchas activas,
+  // traer la tabla completa en cada carga de la pantalla no escala; el
+  // filtro por radio ya se hace en el cliente sobre este subconjunto.
   const { data: courts = [], isLoading } = useQuery({
     queryKey: ["courts"],
-    queryFn: () => base44.entities.Court.filter({ is_active: true }),
+    queryFn: () => base44.entities.Court.filter({ is_active: true }, "-created_date", 300),
   });
 
   useEffect(() => {

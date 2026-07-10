@@ -1,21 +1,20 @@
 import { useState } from "react";
-import { useQuery, useMutation, useQueryClient } from "@tanstack/react-query";
+import { useQuery, useMutation } from "@tanstack/react-query";
 import { base44 } from "@/api/base44Client";
 import { useAuth } from "@/lib/AuthContext";
 import { Button } from "@/components/ui/button";
-import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { Textarea } from "@/components/ui/textarea";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
-import { Badge } from "@/components/ui/badge";
 import { Calendar } from "@/components/ui/calendar";
 import { toast } from "sonner";
 import { format } from "date-fns";
 import { es } from "date-fns/locale";
-import { ArrowLeft, Clock, Check, CreditCard } from "lucide-react";
+import { ArrowLeft, Clock, CreditCard } from "lucide-react";
 import { Link, useNavigate } from "react-router-dom";
 import { motion } from "framer-motion";
 import PaymentQRModal from "@/components/payments/PaymentQRModal";
+import { calculateAmounts, buildBookingPayload } from "@/services/bookingService";
 
 const TIME_SLOTS = [
   "08:00", "09:00", "10:00", "11:00", "12:00", "13:00",
@@ -60,34 +59,32 @@ export default function BookCourt() {
 
   const createBooking = useMutation({
     mutationFn: async ({ paymentType, paidAmount }) => {
-      const totalPrice = court?.price_per_hour || 0;
-      const depositAmount = Math.round(totalPrice * 0.3);
-      const remainingAmount = totalPrice - depositAmount;
-
-      const [hours, minutes] = selectedSlot.split(":").map(Number);
-      const bookingDateTime = new Date(selectedDate);
-      bookingDateTime.setHours(hours, minutes, 0, 0);
-      const paymentDeadline = new Date(bookingDateTime.getTime() - 2 * 60 * 60 * 1000);
-
-      const isPaidTotal = paymentType === "total";
-
-      const bookingData = {
+      // Doble chequeo de disponibilidad justo antes de crear la reserva, para
+      // reducir (aunque no eliminar del todo, ver nota en bookingService)
+      // la ventana de doble-reserva del mismo horario.
+      const clash = await base44.entities.Booking.filter({
         court_id: courtId,
-        court_name: court?.name,
-        owner_email: court?.owner_email || "",
         date: format(selectedDate, "yyyy-MM-dd"),
         time_slot: selectedSlot,
-        duration_hours: 1,
-        total_price: totalPrice,
-        deposit_amount: depositAmount,
-        remaining_amount: isPaidTotal ? 0 : remainingAmount,
-        payment_deadline: paymentDeadline.toISOString(),
-        status: isPaidTotal ? "confirmada" : "pendiente_aprobacion",
-        payment_status: isPaidTotal ? "pagado_total" : "deposito_pagado",
-        player_name: user?.full_name || "",
-        player_email: user?.email || "",
+        status: "confirmada",
+      });
+      if (clash.length > 0) {
+        toast.error("Ese horario se acaba de ocupar. Elegí otro, por favor.");
+        setStep(1);
+        throw new Error("SLOT_TAKEN");
+      }
+
+      const isPaidTotal = paymentType === "total";
+      const { totalPrice, remainingAmount } = calculateAmounts(court?.price_per_hour);
+      const bookingData = buildBookingPayload({
+        court,
+        courtId,
+        date: format(selectedDate, "yyyy-MM-dd"),
+        timeSlot: selectedSlot,
         notes,
-      };
+        user,
+        paymentType,
+      });
       const booking = await base44.entities.Booking.create(bookingData);
 
       await base44.integrations.Core.SendEmail({
@@ -101,7 +98,7 @@ export default function BookCourt() {
           <p><strong>Total:</strong> $${totalPrice.toLocaleString()}</p>
           <p><strong>Pagado:</strong> $${paidAmount.toLocaleString()}</p>
           ${!isPaidTotal ? `<p><strong>Saldo pendiente:</strong> $${remainingAmount.toLocaleString()}</p>
-          <p>⚠️ Tenés tiempo hasta las <strong>${format(paymentDeadline, "HH:mm 'del' dd/MM/yyyy", { locale: es })}</strong> para completar el pago o la reserva se cancela.</p>` : ""}
+          <p>⚠️ Tenés tiempo hasta las <strong>${format(new Date(bookingData.payment_deadline), "HH:mm 'del' dd/MM/yyyy", { locale: es })}</strong> para completar el pago o la reserva se cancela.</p>` : ""}
         `,
       }).catch(() => {});
 
@@ -128,6 +125,10 @@ export default function BookCourt() {
         ? "¡Reserva confirmada con pago total!"
         : "¡Solicitud enviada! Te avisamos cuando el dueño la apruebe.");
       navigate("/my-bookings");
+    },
+    onError: (error) => {
+      if (error?.message === "SLOT_TAKEN") return; // ya se avisó arriba
+      toast.error("No pudimos crear la reserva. Probá de nuevo en unos segundos.");
     },
   });
 

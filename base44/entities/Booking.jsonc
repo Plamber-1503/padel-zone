@@ -40,6 +40,10 @@
       "type": "number",
       "description": "Remaining 70% to be paid"
     },
+    "platform_fee": {
+      "type": "number",
+      "description": "Comisión de PadelZone sobre el total de la reserva (base del modelo de monetización)"
+    },
     "payment_deadline": {
       "type": "string",
       "description": "ISO datetime: booking time minus 2 hours \u2014 after this the booking expires"

@@ -2,7 +2,7 @@ import { useState, useEffect, useRef } from "react";
 import { useQuery, useMutation, useQueryClient } from "@tanstack/react-query";
 import { base44 } from "@/api/base44Client";
 import { useAuth } from "@/lib/AuthContext";
-import { Card, CardContent } from "@/components/ui/card";
+import { Card } from "@/components/ui/card";
 import { Input } from "@/components/ui/input";
 import { Button } from "@/components/ui/button";
 import { Avatar, AvatarFallback } from "@/components/ui/avatar";
@@ -11,7 +11,6 @@ import { Send, Search, ArrowLeft } from "lucide-react";
 import { formatDistanceToNow } from "date-fns";
 import { es } from "date-fns/locale";
 import { cn } from "@/lib/utils";
-import { motion, AnimatePresence } from "framer-motion";
 
 export default function Chat() {
   const { user } = useAuth();
@@ -21,10 +20,13 @@ export default function Chat() {
   const [searchTerm, setSearchTerm] = useState("");
   const messagesEndRef = useRef(null);
 
-  // Get all users for contact list
+  // Reforma: antes se traían TODOS los usuarios sin límite. Esto no escala
+  // con la base de usuarios creciendo. Se agrega un límite razonable; la
+  // reforma completa (búsqueda server-side con paginación real) requiere
+  // un endpoint de búsqueda dedicado en el backend.
   const { data: users = [] } = useQuery({
     queryKey: ["users"],
-    queryFn: () => base44.entities.User.list(),
+    queryFn: () => base44.entities.User.list("-created_date", 200),
   });
 
   const otherUsers = users.filter((u) => u.email !== user?.email);

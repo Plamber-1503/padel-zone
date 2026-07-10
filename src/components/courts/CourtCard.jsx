@@ -1,8 +1,9 @@
 import { Card, CardContent } from "@/components/ui/card";
 import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
-import { MapPin, Clock } from "lucide-react";
+import { Clock } from "lucide-react";
 import { Link } from "react-router-dom";
+import CourtRating from "@/components/courts/CourtRating";
 
 const surfaceLabels = {
   cesped_sintetico: "Césped Sintético",
@@ -30,6 +31,9 @@ export default function CourtCard({ court }) {
       </div>
       <CardContent className="p-5">
         <h3 className="font-heading font-semibold text-lg">{court.name}</h3>
+        <div className="mt-1">
+          <CourtRating courtId={court.id} />
+        </div>
         {court.description && (
           <p className="text-muted-foreground text-sm mt-1 line-clamp-2">{court.description}</p>
         )}

@@ -1,3 +1,4 @@
+import { useState } from "react";
 import { useQuery, useMutation, useQueryClient } from "@tanstack/react-query";
 import { base44 } from "@/api/base44Client";
 import { useAuth } from "@/lib/AuthContext";
@@ -11,6 +12,9 @@ import { CalendarDays, Clock, X, AlertCircle } from "lucide-react";
 import { format as formatDate } from "date-fns";
 import { toast } from "sonner";
 import { motion } from "framer-motion";
+import { shouldRefundOnCancel } from "@/services/bookingService";
+import ReviewModal from "@/components/courts/ReviewModal";
+import { Star } from "lucide-react";
 
 const statusColors = {
   pendiente_aprobacion: "bg-yellow-100 text-yellow-800 border-yellow-200",
@@ -47,6 +51,7 @@ const paymentLabels = {
 export default function MyBookings() {
   const { user } = useAuth();
   const queryClient = useQueryClient();
+  const [reviewBooking, setReviewBooking] = useState(null);
 
   const { data: bookings = [], isLoading } = useQuery({
     queryKey: ["my-bookings", user?.email],
@@ -55,10 +60,38 @@ export default function MyBookings() {
   });
 
   const cancelMutation = useMutation({
-    mutationFn: (id) => base44.entities.Booking.update(id, { status: "cancelada" }),
+    mutationFn: async (booking) => {
+      const refunds = shouldRefundOnCancel(booking);
+      await base44.entities.Booking.update(booking.id, {
+        status: "cancelada",
+        // NOTA: esto sólo registra la intención de reembolso. El reembolso real
+        // de dinero tiene que dispararse contra la API de Mercado Pago una vez
+        // que exista integración real de pagos (ver bookingService.js).
+        payment_status: refunds ? "reembolsado" : booking.payment_status,
+      });
+
+      // Avisar al dueño de la cancha: antes esto no pasaba y el dueño se
+      // enteraba de la cancelación recién al entrar al panel.
+      if (booking.owner_email) {
+        await base44.integrations.Core.SendEmail({
+          to: booking.owner_email,
+          subject: `❌ Reserva cancelada - ${booking.court_name}`,
+          body: `
+            <h2>Un jugador canceló una reserva</h2>
+            <p><strong>Jugador:</strong> ${booking.player_name || booking.player_email}</p>
+            <p><strong>Cancha:</strong> ${booking.court_name}</p>
+            <p><strong>Fecha:</strong> ${booking.date} a las ${booking.time_slot} hs</p>
+            ${refunds ? "<p>El jugador había pagado depósito o total — coordinar el reembolso correspondiente.</p>" : "<p>No había pago registrado para esta reserva.</p>"}
+          `,
+        }).catch(() => {});
+      }
+    },
     onSuccess: () => {
       queryClient.invalidateQueries({ queryKey: ["my-bookings"] });
       toast.success("Reserva cancelada");
+    },
+    onError: () => {
+      toast.error("No pudimos cancelar la reserva. Probá de nuevo.");
     },
   });
 
@@ -119,10 +152,21 @@ export default function MyBookings() {
                           variant="ghost"
                           size="sm"
                           className="text-destructive mt-2"
-                          onClick={() => cancelMutation.mutate(booking.id)}
+                          onClick={() => cancelMutation.mutate(booking)}
                         >
                           <X className="w-4 h-4 mr-1" />
                           Cancelar
+                        </Button>
+                      )}
+                      {booking.status === "confirmada" && (
+                        <Button
+                          variant="outline"
+                          size="sm"
+                          className="mt-2 ml-2 rounded-xl"
+                          onClick={() => setReviewBooking(booking)}
+                        >
+                          <Star className="w-4 h-4 mr-1" />
+                          Calificar
                         </Button>
                       )}
                     </div>
@@ -133,6 +177,12 @@ export default function MyBookings() {
           ))
         )}
       </div>
+
+      <ReviewModal
+        open={!!reviewBooking}
+        onClose={() => setReviewBooking(null)}
+        booking={reviewBooking}
+      />
     </div>
   );
 }

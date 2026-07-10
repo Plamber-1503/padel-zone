@@ -11,6 +11,7 @@ import { formatDistanceToNow } from "date-fns";
 import { es } from "date-fns/locale";
 import { cn } from "@/lib/utils";
 import { Link } from "react-router-dom";
+import { toast } from "sonner";
 
 export default function PostCard({ post }) {
   const { user } = useAuth();
@@ -28,13 +29,26 @@ export default function PostCard({ post }) {
 
   const likeMutation = useMutation({
     mutationFn: async () => {
-      const currentLikes = post.likes || [];
-      const newLikes = isLiked
+      // LIMITACIÓN CONOCIDA: el SDK de Base44 no expone una operación atómica
+      // de "agregar/quitar elemento de array" desde el cliente, así que este
+      // sigue siendo un patrón lectura-modificación-escritura. Para acotar la
+      // ventana de la condición de carrera, releemos el post justo antes de
+      // escribir en lugar de confiar en el valor que tiene el componente en
+      // memoria (que puede estar desactualizado por varios segundos).
+      // Reforma pendiente recomendada: mover esta operación a una función de
+      // backend (asServiceRole) que haga el read-modify-write server-side, o
+      // migrar `likes` a una entidad Like separada (post_id + user_email)
+      // para poder simplemente crear/borrar filas sin pisar un array.
+      const [freshPost] = await base44.entities.Post.filter({ id: post.id });
+      const currentLikes = freshPost?.likes || post.likes || [];
+      const alreadyLiked = currentLikes.includes(user?.email);
+      const newLikes = alreadyLiked
         ? currentLikes.filter((e) => e !== user?.email)
         : [...currentLikes, user?.email];
       await base44.entities.Post.update(post.id, { likes: newLikes });
     },
     onSuccess: () => queryClient.invalidateQueries({ queryKey: ["posts"] }),
+    onError: () => toast.error("No pudimos registrar el like. Probá de nuevo."),
   });
 
   const commentMutation = useMutation({

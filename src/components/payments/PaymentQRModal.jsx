@@ -275,6 +275,10 @@ export default function PaymentQRModal({ open, onClose, court, booking, onPaymen
                     Ya pagué · Confirmar
                   </Button>
                 </div>
+                <p className="text-[11px] text-muted-foreground text-center pt-1">
+                  Esta confirmación es informativa: el dueño de la cancha verá el pago
+                  reflejado en su cuenta de Mercado Pago antes de aprobar la reserva.
+                </p>
               </div>
             )}
           </div>

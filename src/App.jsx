@@ -1,4 +1,4 @@
-import { Toaster } from "@/components/ui/toaster"
+import { Toaster } from "@/components/ui/sonner"
 import { QueryClientProvider } from '@tanstack/react-query'
 import { queryClientInstance } from '@/lib/query-client'
 import { BrowserRouter as Router, Route, Routes, Navigate } from 'react-router-dom';
@@ -6,6 +6,7 @@ import PageNotFound from './lib/PageNotFound';
 import { AuthProvider, useAuth } from '@/lib/AuthContext';
 import UserNotRegisteredError from '@/components/UserNotRegisteredError';
 import ProtectedRoute from '@/components/ProtectedRoute';
+import RoleRoute from '@/components/RoleRoute';
 
 import Login from '@/pages/Login';
 import Register from '@/pages/Register';
@@ -65,7 +66,11 @@ const AuthenticatedApp = () => {
           <Route path="/chat" element={<Chat />} />
           <Route path="/profile" element={<Profile />} />
           <Route path="/user/:email" element={<UserProfile />} />
-          <Route path="/owner-dashboard" element={<OwnerDashboard />} />
+
+          {/* Sólo court_owner o admin pueden ver el panel de dueño */}
+          <Route element={<RoleRoute allow={["court_owner", "admin"]} />}>
+            <Route path="/owner-dashboard" element={<OwnerDashboard />} />
+          </Route>
         </Route>
       </Route>
 
