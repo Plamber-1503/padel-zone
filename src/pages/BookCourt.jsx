@@ -14,7 +14,7 @@ import { ArrowLeft, Clock, CreditCard } from "lucide-react";
 import { Link, useNavigate } from "react-router-dom";
 import { motion } from "framer-motion";
 import PaymentQRModal from "@/components/payments/PaymentQRModal";
-import { calculateAmounts, buildBookingPayload } from "@/services/bookingService";
+import { calculateAmounts, buildBookingPayload, PAYMENT_WINDOW_HOURS } from "@/services/bookingService";
 
 const TIME_SLOTS = [
   "08:00", "09:00", "10:00", "11:00", "12:00", "13:00",
@@ -276,14 +276,14 @@ export default function BookCourt() {
                   <p className="text-sm font-semibold text-yellow-800">💳 Modalidad de pago con depósito</p>
                   <div className="flex justify-between text-sm">
                     <span className="text-yellow-700">Depósito ahora (30%)</span>
-                    <span className="font-bold text-yellow-800">${Math.round((court?.price_per_hour || 0) * 0.3).toLocaleString()}</span>
+                    <span className="font-bold text-yellow-800">${calculateAmounts(court?.price_per_hour).depositAmount.toLocaleString()}</span>
                   </div>
                   <div className="flex justify-between text-sm">
                     <span className="text-yellow-700">Saldo restante (70%)</span>
-                    <span className="font-bold text-yellow-800">${Math.round((court?.price_per_hour || 0) * 0.7).toLocaleString()}</span>
+                    <span className="font-bold text-yellow-800">${calculateAmounts(court?.price_per_hour).remainingAmount.toLocaleString()}</span>
                   </div>
                   <p className="text-xs text-yellow-600 pt-1 border-t border-yellow-200">
-                    ⚠️ Tenés hasta 2 hs antes del turno para completar el pago. Si no pagás el total, la reserva se cancela automáticamente.
+                    ⚠️ Tenés hasta {PAYMENT_WINDOW_HOURS} hs antes del turno para completar el pago. Si no pagás el total, la reserva se cancela automáticamente.
                   </p>
                 </div>
 

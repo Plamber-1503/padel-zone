@@ -5,6 +5,7 @@ import { Button } from "@/components/ui/button";
 import { Badge } from "@/components/ui/badge";
 import { QrCode, Copy, CheckCircle2, Loader2, AlertCircle, Wallet, ArrowRight, ExternalLink, ShieldCheck } from "lucide-react";
 import { toast } from "sonner";
+import { calculateAmounts } from "@/services/bookingService";
 
 // CBU y Alias válidos según reglas argentinas
 const ALIAS_REGEX = /^[a-zA-Z0-9.\-_]{6,20}$/;
@@ -29,7 +30,7 @@ export default function PaymentQRModal({ open, onClose, court, booking, onPaymen
   const [copied, setCopied] = useState(null);
 
   const totalPrice = court?.price_per_hour || 0;
-  const depositAmount = Math.round(totalPrice * 0.3);
+  const { depositAmount } = calculateAmounts(totalPrice);
   const selectedAmount = paymentType === "deposito" ? depositAmount : paymentType === "total" ? totalPrice : null;
 
   // Validar datos del dueño

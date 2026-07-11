@@ -80,3 +80,16 @@ están disponibles en el repositorio:
    pantallas asociadas).
 5. **Migrar relaciones de `email` a `user_id`** — cambio de modelo de datos
    que conviene planificar como migración propia, no como parche.
+
+## Nota sobre `npm run typecheck`
+
+El proyecto entregado originalmente ya tenía un volumen alto de errores de
+`tsc` (~426) sobre archivos `.jsx`, principalmente porque los componentes de
+shadcn/ui no anotan explícitamente props como `children` o `variant`, y
+porque `useMutation` sin anotaciones explícitas infiere a veces el tipo del
+parámetro de `mutationFn` como `void`. Esto es ruido de configuración
+(`jsconfig.json` con `checkJs: true` pero sin tipos completos en los
+componentes base), no errores reales de runtime — el `build` compila y
+corre sin problemas. No se resolvió en esta pasada porque requeriría
+tipar a mano toda la librería de componentes base, un trabajo aparte y de
+alcance mayor al de esta auditoría.

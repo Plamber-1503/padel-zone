@@ -8,28 +8,21 @@ import { createClientFromRequest } from 'npm:@base44/sdk@0.8.25';
  * (OwnerDashboard.jsx hacía el chequeo en el cliente). Eso significaba que
  * una reserva vencida podía quedar bloqueando el horario indefinidamente.
  *
- * Esta función corre del lado del servidor y debe programarse como cron
- * (por ejemplo cada 15 minutos) en la configuración de Base44. Se puede
- * invocar también manualmente con acceso de admin para testing.
+ * Esta función corre del lado del servidor y debe programarse como tarea
+ * periódica (cron, por ejemplo cada 15 minutos) desde la configuración de
+ * Base44 — igual que ya está configurado `sendBookingReminders`. Sigue el
+ * mismo patrón de autenticación que esa función (rol admin) en lugar de
+ * inventar un mecanismo nuevo: al programar la tarea periódica en Base44,
+ * consultar con su documentación con qué credencial se ejecutan los cron
+ * jobs (habitualmente una cuenta de servicio con rol admin).
  */
 Deno.serve(async (req) => {
   try {
     const base44 = createClientFromRequest(req);
+    const user = await base44.auth.me();
 
-    // Permitir ejecución por el scheduler de Base44 (service role) o por un admin.
-    let isAuthorizedAdmin = false;
-    try {
-      const user = await base44.auth.me();
-      isAuthorizedAdmin = user?.role === 'admin';
-    } catch {
-      // Sin usuario autenticado: puede ser una invocación del scheduler.
-      isAuthorizedAdmin = false;
-    }
-
-    const isScheduledRun = req.headers.get('x-base44-scheduler') === 'true';
-
-    if (!isAuthorizedAdmin && !isScheduledRun) {
-      return Response.json({ error: 'Forbidden' }, { status: 403 });
+    if (user?.role !== 'admin') {
+      return Response.json({ error: 'Forbidden: Admin access required' }, { status: 403 });
     }
 
     const now = new Date();

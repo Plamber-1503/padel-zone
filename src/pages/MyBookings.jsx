@@ -8,13 +8,12 @@ import { Button } from "@/components/ui/button";
 import { Skeleton } from "@/components/ui/skeleton";
 import { format } from "date-fns";
 import { es } from "date-fns/locale";
-import { CalendarDays, Clock, X, AlertCircle } from "lucide-react";
+import { CalendarDays, Clock, X, AlertCircle, Star } from "lucide-react";
 import { format as formatDate } from "date-fns";
 import { toast } from "sonner";
 import { motion } from "framer-motion";
 import { shouldRefundOnCancel } from "@/services/bookingService";
 import ReviewModal from "@/components/courts/ReviewModal";
-import { Star } from "lucide-react";
 
 const statusColors = {
   pendiente_aprobacion: "bg-yellow-100 text-yellow-800 border-yellow-200",

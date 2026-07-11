@@ -1,6 +1,7 @@
-import { Navigate, Outlet } from "react-router-dom";
+import { Link, Outlet } from "react-router-dom";
 import { useAuth } from "@/lib/AuthContext";
 import { ShieldAlert } from "lucide-react";
+import { Button } from "@/components/ui/button";
 
 /**
  * Protege rutas que requieren un rol específico (además de estar autenticado).
@@ -21,6 +22,9 @@ export default function RoleRoute({ allow = [] }) {
   const hasAccess = user && allow.includes(user.role);
 
   if (!hasAccess) {
+    // Importante: NO usar <Navigate> acá. Un redirect automático dispara
+    // durante el render y el usuario nunca llega a ver el mensaje. Mejor
+    // mostrar la pantalla y dejar que decida volver.
     return (
       <div className="max-w-md mx-auto px-4 py-24 text-center">
         <ShieldAlert className="w-12 h-12 text-destructive mx-auto mb-4" />
@@ -29,7 +33,9 @@ export default function RoleRoute({ allow = [] }) {
           Esta pantalla es sólo para dueños de cancha o administradores. Si creés que
           esto es un error, contactá a soporte para verificar tu cuenta.
         </p>
-        <Navigate to="/" replace />
+        <Button asChild className="rounded-xl">
+          <Link to="/">Volver al inicio</Link>
+        </Button>
       </div>
     );
   }
