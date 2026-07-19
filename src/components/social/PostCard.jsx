@@ -5,7 +5,7 @@ import { useQuery, useMutation, useQueryClient } from "@tanstack/react-query";
 import { Card, CardContent } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
-import { Avatar, AvatarFallback } from "@/components/ui/avatar";
+import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
 import { Heart, MessageCircle, Send } from "lucide-react";
 import { formatDistanceToNow } from "date-fns";
 import { es } from "date-fns/locale";
@@ -21,6 +21,14 @@ export default function PostCard({ post }) {
 
   const isLiked = post.likes?.includes(user?.email);
 
+  // Fetch author user profile if avatar is missing
+  const { data: authorUsers = [] } = useQuery({
+    queryKey: ["author-user", post.author_email],
+    queryFn: () => base44.entities.User.filter({ email: post.author_email }),
+    enabled: !post.author_avatar_url && !!post.author_email,
+  });
+  const authorAvatarUrl = post.author_avatar_url || authorUsers[0]?.avatar_url;
+
   const { data: comments = [] } = useQuery({
     queryKey: ["comments", post.id],
     queryFn: () => base44.entities.Comment.filter({ post_id: post.id }, "-created_date"),
@@ -29,16 +37,6 @@ export default function PostCard({ post }) {
 
   const likeMutation = useMutation({
     mutationFn: async () => {
-      // LIMITACIÓN CONOCIDA: el SDK de Base44 no expone una operación atómica
-      // de "agregar/quitar elemento de array" desde el cliente, así que este
-      // sigue siendo un patrón lectura-modificación-escritura. Para acotar la
-      // ventana de la condición de carrera, releemos el post justo antes de
-      // escribir en lugar de confiar en el valor que tiene el componente en
-      // memoria (que puede estar desactualizado por varios segundos).
-      // Reforma pendiente recomendada: mover esta operación a una función de
-      // backend (asServiceRole) que haga el read-modify-write server-side, o
-      // migrar `likes` a una entidad Like separada (post_id + user_email)
-      // para poder simplemente crear/borrar filas sin pisar un array.
       const [freshPost] = await base44.entities.Post.filter({ id: post.id });
       const currentLikes = freshPost?.likes || post.likes || [];
       const alreadyLiked = currentLikes.includes(user?.email);
@@ -57,6 +55,7 @@ export default function PostCard({ post }) {
         post_id: post.id,
         author_email: user?.email,
         author_name: user?.full_name || user?.email,
+        author_avatar_url: user?.avatar_url,
         content: commentText,
       });
       await base44.entities.Post.update(post.id, {
@@ -84,6 +83,7 @@ export default function PostCard({ post }) {
         <div className="flex items-center gap-3 mb-4">
           <Link to={`/user/${encodeURIComponent(post.author_email)}`}>
             <Avatar className="w-10 h-10 bg-primary/10">
+              {authorAvatarUrl && <AvatarImage src={authorAvatarUrl} alt={post.author_name} />}
               <AvatarFallback className="bg-primary/10 text-primary font-semibold text-sm">
                 {initials}
               </AvatarFallback>
@@ -135,6 +135,7 @@ export default function PostCard({ post }) {
             {comments.map((c) => (
               <div key={c.id} className="flex gap-2">
                 <Avatar className="w-7 h-7">
+                  {c.author_avatar_url && <AvatarImage src={c.author_avatar_url} alt={c.author_name} />}
                   <AvatarFallback className="bg-muted text-xs font-medium">
                     {(c.author_name || "?")[0].toUpperCase()}
                   </AvatarFallback>

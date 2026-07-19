@@ -5,7 +5,7 @@ import { useAuth } from "@/lib/AuthContext";
 import { Card } from "@/components/ui/card";
 import { Input } from "@/components/ui/input";
 import { Button } from "@/components/ui/button";
-import { Avatar, AvatarFallback } from "@/components/ui/avatar";
+import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
 import { ScrollArea } from "@/components/ui/scroll-area";
 import { Send, Search, ArrowLeft } from "lucide-react";
 import { formatDistanceToNow } from "date-fns";
@@ -129,6 +129,7 @@ export default function Chat() {
                     )}
                   >
                     <Avatar className="w-10 h-10 shrink-0">
+                      {u.avatar_url && <AvatarImage src={u.avatar_url} alt={u.full_name} />}
                       <AvatarFallback className="bg-primary/10 text-primary text-sm font-semibold">
                         {(u.full_name || u.email || "?")[0].toUpperCase()}
                       </AvatarFallback>
@@ -160,6 +161,7 @@ export default function Chat() {
                     <ArrowLeft className="w-5 h-5" />
                   </button>
                   <Avatar className="w-8 h-8">
+                    {selectedUser.avatar_url && <AvatarImage src={selectedUser.avatar_url} alt={selectedUser.full_name} />}
                     <AvatarFallback className="bg-primary/10 text-primary text-xs font-semibold">
                       {(selectedUser.full_name || selectedUser.email || "?")[0].toUpperCase()}
                     </AvatarFallback>
