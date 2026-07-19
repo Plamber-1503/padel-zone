@@ -1,14 +1,5 @@
-import { createClient } from '@base44/sdk';
-import { appParams } from '@/lib/app-params';
+import { localBase44 } from './localClient';
 
-const { appId, token, functionsVersion, appBaseUrl } = appParams;
+console.info('%c[PadelZone] 🎾 Backend Local Activo (Node.js + Express + SQLite)', 'color: #22c55e; font-weight: bold');
 
-//Create a client with authentication required
-export const base44 = createClient({
-  appId,
-  token,
-  functionsVersion,
-  serverUrl: '',
-  requiresAuth: false,
-  appBaseUrl
-});
+export const base44 = localBase44;

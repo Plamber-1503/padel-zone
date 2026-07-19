@@ -16,3 +16,7 @@ dist-ssr
 *.sw?
 .vite
 *.log
+server/node_modules
+server/uploads
+server/data/db.json
+

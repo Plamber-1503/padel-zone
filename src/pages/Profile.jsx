@@ -16,9 +16,10 @@ import { motion } from "framer-motion";
 import PostCard from "@/components/social/PostCard";
 import { Link } from "react-router-dom";
 import MercadoPagoSection from "@/components/payments/MercadoPagoSection";
+import { OWNER_ROLES } from "@/constants";
 
 export default function Profile() {
-  const { user } = useAuth();
+  const { user, logout } = useAuth();
   const queryClient = useQueryClient();
   const [editing, setEditing] = useState(false);
   const [bio, setBio] = useState(user?.bio || "");
@@ -115,7 +116,7 @@ export default function Profile() {
                 <Button
                   variant="ghost"
                   size="sm"
-                  onClick={() => base44.auth.logout()}
+                  onClick={() => logout()}
                   className="rounded-xl text-destructive"
                 >
                   <LogOut className="w-4 h-4" />
@@ -157,7 +158,7 @@ export default function Profile() {
         </Card>
 
         {/* Mercado Pago — solo para dueños de cancha */}
-        {(user?.role === "court_owner" || user?.role === "admin") && (
+        {OWNER_ROLES.includes(user?.role) && (
           <MercadoPagoSection user={user} onUpdate={() => queryClient.invalidateQueries()} />
         )}
 

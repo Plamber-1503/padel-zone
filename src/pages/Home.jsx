@@ -8,16 +8,19 @@ const features = [
     icon: CalendarDays,
     title: "Reservá tu cancha",
     description: "Elegí el horario que más te convenga y reservá en segundos.",
+    href: "/courts",
   },
   {
     icon: Users,
     title: "Comunidad activa",
     description: "Conectá con otros jugadores, compartí fotos y encontrá compañeros.",
+    href: "/feed",
   },
   {
     icon: Trophy,
     title: "Mejorá tu juego",
     description: "Seguí a los mejores jugadores y aprendé de la comunidad.",
+    href: "/feed",
   },
 ];
 
@@ -29,7 +32,7 @@ export default function Home() {
         <div className="absolute inset-0 bg-gradient-to-br from-primary/10 via-background to-accent/30" />
         <div className="absolute top-20 right-10 w-72 h-72 bg-primary/10 rounded-full blur-3xl" />
         <div className="absolute bottom-10 left-10 w-96 h-96 bg-accent/20 rounded-full blur-3xl" />
-        
+
         <div className="relative max-w-7xl mx-auto px-4 py-20 md:py-32">
           <motion.div
             initial={{ opacity: 0, y: 30 }}
@@ -70,22 +73,27 @@ export default function Home() {
       <section className="max-w-7xl mx-auto px-4 py-16 md:py-24">
         <div className="grid md:grid-cols-3 gap-6">
           {features.map((feature, i) => (
-            <motion.div
-              key={feature.title}
-              initial={{ opacity: 0, y: 20 }}
-              animate={{ opacity: 1, y: 0 }}
-              transition={{ delay: 0.2 + i * 0.1 }}
-              className="group p-8 rounded-2xl bg-card border border-border hover:border-primary/30 hover:shadow-xl hover:shadow-primary/5 transition-all duration-300"
-            >
-              <div className="w-12 h-12 rounded-xl bg-accent flex items-center justify-center mb-5 group-hover:bg-primary group-hover:text-primary-foreground transition-colors duration-300">
-                <feature.icon className="w-6 h-6 text-accent-foreground group-hover:text-primary-foreground" />
-              </div>
-              <h3 className="font-heading font-semibold text-lg text-foreground mb-2">{feature.title}</h3>
-              <p className="text-muted-foreground text-sm leading-relaxed">{feature.description}</p>
-            </motion.div>
+            <Link to={feature.href} key={feature.title}>
+              <motion.div
+                initial={{ opacity: 0, y: 20 }}
+                animate={{ opacity: 1, y: 0 }}
+                transition={{ delay: 0.2 + i * 0.1 }}
+                className="group cursor-pointer p-8 rounded-2xl bg-card border border-border hover:border-primary/30 hover:shadow-xl hover:shadow-primary/5 transition-all duration-300 h-full"
+              >
+                <div className="w-12 h-12 rounded-xl bg-accent flex items-center justify-center mb-5 group-hover:bg-primary group-hover:text-primary-foreground transition-colors duration-300">
+                  <feature.icon className="w-6 h-6 text-accent-foreground group-hover:text-primary-foreground" />
+                </div>
+                <div className="flex items-start justify-between gap-2">
+                  <h3 className="font-heading font-semibold text-lg text-foreground mb-2">{feature.title}</h3>
+                  <ArrowRight className="w-4 h-4 mt-1 shrink-0 text-muted-foreground/40 group-hover:text-primary group-hover:translate-x-1 transition-all duration-200" />
+                </div>
+                <p className="text-muted-foreground text-sm leading-relaxed">{feature.description}</p>
+              </motion.div>
+            </Link>
           ))}
         </div>
       </section>
+
 
       {/* Stats */}
       <section className="max-w-7xl mx-auto px-4 pb-20">

@@ -11,6 +11,11 @@ import BookingRequestCard from "@/components/owner/BookingRequestCard";
 import MyCourtsManager from "@/components/owner/MyCourtsManager";
 import { format } from "date-fns";
 import { es } from "date-fns/locale";
+import {
+  BOOKING_STATUS_LABELS,
+  BOOKING_STATUS_COLORS,
+  HISTORY_STATUSES,
+} from "@/constants";
 
 export default function OwnerDashboard() {
   const { user } = useAuth();
@@ -36,21 +41,7 @@ export default function OwnerDashboard() {
   const confirmed = allBookings.filter((b) => b.status === "confirmada");
   const rejected = allBookings.filter((b) => b.status === "rechazada" || b.status === "expirada" || b.status === "cancelada");
 
-  const statusColors = {
-    aprobada: "bg-blue-100 text-blue-800 border-blue-200",
-    confirmada: "bg-accent text-accent-foreground border-accent",
-    rechazada: "bg-destructive/10 text-destructive border-destructive/20",
-    expirada: "bg-muted text-muted-foreground border-border",
-    cancelada: "bg-muted text-muted-foreground border-border",
-  };
 
-  const statusLabels = {
-    aprobada: "Aprobada — pago pendiente",
-    confirmada: "Confirmada",
-    rechazada: "Rechazada",
-    expirada: "Expirada",
-    cancelada: "Cancelada",
-  };
 
   return (
     <div className="max-w-4xl mx-auto px-4 py-8">
@@ -120,7 +111,7 @@ export default function OwnerDashboard() {
 
           {/* MY COURTS TAB */}
           <TabsContent value="courts">
-            <MyCourtsManager user={user} onUserUpdate={() => queryClient.invalidateQueries()} />
+            <MyCourtsManager user={user} onUserUpdate={() => queryClient.invalidateQueries({ queryKey: ["owner-bookings"] })} />
           </TabsContent>
 
           {/* PENDING TAB */}
@@ -176,8 +167,8 @@ export default function OwnerDashboard() {
                               </p>
                             )}
                           </div>
-                          <Badge className={statusColors[booking.status]}>
-                            {statusLabels[booking.status]}
+                          <Badge className={BOOKING_STATUS_COLORS[booking.status]}>
+                            {BOOKING_STATUS_LABELS[booking.status]}
                           </Badge>
                         </div>
                       </CardContent>
@@ -190,13 +181,13 @@ export default function OwnerDashboard() {
 
           {/* HISTORY TAB */}
           <TabsContent value="history">
-            {[...confirmed, ...rejected].length === 0 ? (
+            {[...allBookings.filter(b => HISTORY_STATUSES.includes(b.status))].length === 0 ? (
               <div className="text-center py-20">
                 <p className="text-muted-foreground">No hay historial de reservas todavía.</p>
               </div>
             ) : (
               <div className="space-y-3">
-                {[...confirmed, ...rejected].map((booking, i) => (
+                {allBookings.filter(b => HISTORY_STATUSES.includes(b.status)).map((booking, i) => (
                   <motion.div key={booking.id} initial={{ opacity: 0 }} animate={{ opacity: 1 }} transition={{ delay: i * 0.04 }}>
                     <Card>
                       <CardContent className="p-4">
@@ -207,8 +198,8 @@ export default function OwnerDashboard() {
                               {booking.player_name} — {booking.date} {booking.time_slot} hs
                             </p>
                           </div>
-                          <Badge className={statusColors[booking.status]}>
-                            {statusLabels[booking.status] || booking.status}
+                          <Badge className={BOOKING_STATUS_COLORS[booking.status]}>
+                            {BOOKING_STATUS_LABELS[booking.status] || booking.status}
                           </Badge>
                         </div>
                       </CardContent>

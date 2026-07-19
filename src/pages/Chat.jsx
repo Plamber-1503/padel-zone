@@ -37,7 +37,7 @@ export default function Chat() {
 
   // Get messages with selected user
   const { data: allMessages = [] } = useQuery({
-    queryKey: ["chat-messages", user?.email],
+    queryKey: ["chat-messages", user?.email, selectedUser?.email],
     queryFn: async () => {
       const sent = await base44.entities.ChatMessage.filter({ sender_email: user?.email }, "-created_date", 100);
       const received = await base44.entities.ChatMessage.filter({ receiver_email: user?.email }, "-created_date", 100);

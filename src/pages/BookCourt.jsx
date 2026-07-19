@@ -11,20 +11,17 @@ import { toast } from "sonner";
 import { format } from "date-fns";
 import { es } from "date-fns/locale";
 import { ArrowLeft, Clock, CreditCard } from "lucide-react";
-import { Link, useNavigate } from "react-router-dom";
+import { Link, useNavigate, useSearchParams } from "react-router-dom";
 import { motion } from "framer-motion";
 import PaymentQRModal from "@/components/payments/PaymentQRModal";
 import { calculateAmounts, buildBookingPayload, PAYMENT_WINDOW_HOURS } from "@/services/bookingService";
+import { TIME_SLOTS } from "@/constants";
 
-const TIME_SLOTS = [
-  "08:00", "09:00", "10:00", "11:00", "12:00", "13:00",
-  "14:00", "15:00", "16:00", "17:00", "18:00", "19:00",
-  "20:00", "21:00", "22:00"
-];
+
 
 export default function BookCourt() {
-  const urlParams = new URLSearchParams(window.location.search);
-  const courtId = urlParams.get("courtId");
+  const [searchParams] = useSearchParams();
+  const courtId = searchParams.get("courtId");
   const navigate = useNavigate();
   const { user } = useAuth();
 

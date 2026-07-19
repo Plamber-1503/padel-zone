@@ -8,12 +8,9 @@ import { Skeleton } from "@/components/ui/skeleton";
 import { Plus, Pencil, Clock, CheckCircle2, XCircle } from "lucide-react";
 import CourtFormModal from "@/components/owner/CourtFormModal";
 import MercadoPagoSection from "@/components/payments/MercadoPagoSection";
+import { SURFACE_TYPE_LABELS } from "@/constants";
 
-const surfaceLabels = {
-  cesped_sintetico: "Césped Sintético",
-  cemento: "Cemento",
-  cristal: "Cristal",
-};
+
 
 export default function MyCourtsManager({ user, onUserUpdate }) {
   const queryClient = useQueryClient();
@@ -72,7 +69,7 @@ export default function MyCourtsManager({ user, onUserUpdate }) {
                       <Badge className="bg-secondary/90 text-secondary-foreground text-xs">Techada</Badge>
                     )}
                     <Badge className="bg-primary/90 text-primary-foreground text-xs">
-                      {surfaceLabels[court.surface_type] || court.surface_type}
+                      {SURFACE_TYPE_LABELS[court.surface_type] || court.surface_type}
                     </Badge>
                   </div>
                   <div className="absolute top-2 right-2">

@@ -2,6 +2,7 @@ import { Outlet, Link, useLocation } from "react-router-dom";
 import { Home, CalendarDays, Users, MessageCircle, User, LayoutDashboard } from "lucide-react";
 import { cn } from "@/lib/utils";
 import { useAuth } from "@/lib/AuthContext";
+import { OWNER_ROLES } from "@/constants";
 
 const navItems = [
   { path: "/", icon: Home, label: "Inicio" },
@@ -16,7 +17,7 @@ const ownerNavItem = { path: "/owner-dashboard", icon: LayoutDashboard, label: "
 export default function AppLayout() {
   const location = useLocation();
   const { user } = useAuth();
-  const isOwner = user?.role === "court_owner" || user?.role === "admin";
+  const isOwner = OWNER_ROLES.includes(user?.role);
   const visibleNavItems = isOwner ? [...navItems, ownerNavItem] : navItems;
 
   return (
@@ -28,7 +29,7 @@ export default function AppLayout() {
             <div className="w-9 h-9 rounded-xl bg-primary flex items-center justify-center">
               <span className="text-primary-foreground font-heading font-bold text-lg">P</span>
             </div>
-            <span className="font-heading font-bold text-xl text-foreground hidden sm:block">PadelClub</span>
+            <span className="font-heading font-bold text-xl text-foreground hidden sm:block">Padel Zone</span>
           </Link>
           <nav className="hidden md:flex items-center gap-1">
             {visibleNavItems.map((item) => {

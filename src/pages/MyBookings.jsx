@@ -9,43 +9,20 @@ import { Skeleton } from "@/components/ui/skeleton";
 import { format } from "date-fns";
 import { es } from "date-fns/locale";
 import { CalendarDays, Clock, X, AlertCircle, Star } from "lucide-react";
-import { format as formatDate } from "date-fns";
 import { toast } from "sonner";
 import { motion } from "framer-motion";
 import { shouldRefundOnCancel } from "@/services/bookingService";
 import ReviewModal from "@/components/courts/ReviewModal";
+import {
+  BOOKING_STATUS,
+  BOOKING_STATUS_LABELS,
+  BOOKING_STATUS_COLORS,
+  CANCELLABLE_STATUSES,
+  PAYMENT_STATUS_LABELS,
+  PAYMENT_STATUS_COLORS,
+} from "@/constants";
 
-const statusColors = {
-  pendiente_aprobacion: "bg-yellow-100 text-yellow-800 border-yellow-200",
-  aprobada: "bg-blue-100 text-blue-800 border-blue-200",
-  confirmada: "bg-accent text-accent-foreground border-accent",
-  rechazada: "bg-destructive/10 text-destructive border-destructive/20",
-  expirada: "bg-muted text-muted-foreground border-border",
-  cancelada: "bg-muted text-muted-foreground border-border",
-};
 
-const statusLabels = {
-  pendiente_aprobacion: "Pendiente aprobación",
-  aprobada: "Aprobada — pago pendiente",
-  confirmada: "Confirmada",
-  rechazada: "Rechazada",
-  expirada: "Expirada",
-  cancelada: "Cancelada",
-};
-
-const paymentColors = {
-  pendiente: "bg-yellow-100 text-yellow-800",
-  deposito_pagado: "bg-blue-100 text-blue-800",
-  pagado_total: "bg-accent text-accent-foreground",
-  reembolsado: "bg-muted text-muted-foreground",
-};
-
-const paymentLabels = {
-  pendiente: "Sin pago",
-  deposito_pagado: "Depósito pagado (30%)",
-  pagado_total: "Pagado total",
-  reembolsado: "Reembolsado",
-};
 
 export default function MyBookings() {
   const { user } = useAuth();
@@ -125,11 +102,11 @@ export default function MyBookings() {
                         </span>
                       </div>
                       <div className="flex gap-2 mt-3 flex-wrap">
-                        <Badge className={statusColors[booking.status] || "bg-muted text-muted-foreground"}>
-                          {statusLabels[booking.status] || booking.status}
+                        <Badge className={BOOKING_STATUS_COLORS[booking.status] || "bg-muted text-muted-foreground"}>
+                          {BOOKING_STATUS_LABELS[booking.status] || booking.status}
                         </Badge>
-                        <Badge className={paymentColors[booking.payment_status] || "bg-muted text-muted-foreground"}>
-                          {paymentLabels[booking.payment_status] || booking.payment_status}
+                        <Badge className={PAYMENT_STATUS_COLORS[booking.payment_status] || "bg-muted text-muted-foreground"}>
+                          {PAYMENT_STATUS_LABELS[booking.payment_status] || booking.payment_status}
                         </Badge>
                       </div>
                       {booking.status === "aprobada" && booking.remaining_amount > 0 && (
@@ -137,7 +114,7 @@ export default function MyBookings() {
                           <AlertCircle className="w-3 h-3" />
                           Saldo pendiente: ${booking.remaining_amount?.toLocaleString()}
                           {booking.payment_deadline && (
-                            <span> · vence {formatDate(new Date(booking.payment_deadline), "dd/MM HH:mm")} hs</span>
+                            <span> · vence {format(new Date(booking.payment_deadline), "dd/MM HH:mm")} hs</span>
                           )}
                         </div>
                       )}
@@ -146,7 +123,7 @@ export default function MyBookings() {
                       <p className="font-heading font-bold text-lg text-primary">
                         ${booking.total_price?.toLocaleString()}
                       </p>
-                      {(booking.status === "confirmada" || booking.status === "aprobada" || booking.status === "pendiente_aprobacion") && (
+                      {(CANCELLABLE_STATUSES.includes(booking.status)) && (
                         <Button
                           variant="ghost"
                           size="sm"
@@ -157,7 +134,7 @@ export default function MyBookings() {
                           Cancelar
                         </Button>
                       )}
-                      {booking.status === "confirmada" && (
+                      {booking.status === BOOKING_STATUS.CONFIRMED && (
                         <Button
                           variant="outline"
                           size="sm"
