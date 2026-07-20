@@ -7,6 +7,7 @@
     "dev": "vite",
     "server": "node server/src/index.js",
     "build": "vite build",
+    "deploy": "vite build && gh-pages -d dist",
     "lint": "eslint . --quiet",
     "lint:fix": "eslint . --fix",
     "typecheck": "tsc -p ./jsconfig.json",
