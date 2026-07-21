@@ -1,4 +1,5 @@
 import React, { useState } from "react";
+import { useNavigate } from "react-router-dom";
 import { Link } from "react-router-dom";
 import { base44 } from "@/api/base44Client";
 import { Button } from "@/components/ui/button";
@@ -7,12 +8,15 @@ import { Label } from "@/components/ui/label";
 import { LogIn, Mail, Lock, Loader2 } from "lucide-react";
 import AuthLayout from "@/components/AuthLayout";
 import GoogleIcon from "@/components/GoogleIcon";
+import { useAuth } from "@/lib/AuthContext";
 
 export default function Login() {
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
   const [error, setError] = useState("");
   const [loading, setLoading] = useState(false);
+  const navigate = useNavigate();
+  const { checkUserAuth } = useAuth();
 
   const handleSubmit = async (e) => {
     e.preventDefault();
@@ -20,16 +24,17 @@ export default function Login() {
     setLoading(true);
     try {
       await base44.auth.loginViaEmailPassword(email, password);
-      window.location.hash = "#/";
+      await checkUserAuth();
+      navigate("/", { replace: true });
     } catch (err) {
-      setError(err.message || "Invalid email or password");
+      setError(err.message || "Correo o contraseña incorrectos");
     } finally {
       setLoading(false);
     }
   };
 
   const handleGoogle = () => {
-    base44.auth.loginWithProvider("google", "/");
+    base44.auth.loginWithProvider("google", window.location.href);
   };
 
   return (

@@ -36,11 +36,14 @@ export function AuthProvider({ children }) {
   const logout = (shouldRedirect = true) => {
     setUser(null);
     setIsAuthenticated(false);
-    base44.auth.logout(shouldRedirect ? '/login' : null);
+    base44.auth.logout(null);
+    if (shouldRedirect) {
+      window.location.hash = "#/login";
+    }
   };
 
   const navigateToLogin = () => {
-    window.location.href = '/login';
+    window.location.hash = "#/login";
   };
 
   return (
