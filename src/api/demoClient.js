@@ -138,52 +138,132 @@ const DEMO_USERS = [
 const DEMO_COURTS = [
   {
     id: "court-1", name: "Cancha Central", owner_id: "owner-user-1",
-    location: "Av. Libertador 1250, Buenos Aires", price_per_hour: 4500,
-    surface: "cristal", indoor: true, amenities: ["vestuarios", "estacionamiento", "bar"],
+    address: "Av. Libertador 1250, Buenos Aires",
+    location: "Av. Libertador 1250, Buenos Aires",
+    price_per_hour: 4500,
+    surface: "cristal", indoor: true, is_covered: true,
+    amenities: ["Vestuarios", "Estacionamiento", "Bar"],
     image_url: "https://images.unsplash.com/photo-1554068865-24cecd4e34b8?w=800&fit=crop",
-    rating: 4.8, available: true, description: "Cancha de pádel cristal de última generación."
+    rating: 4.8, review_count: 12,
+    available: true, is_active: true,
+    latitude: -34.5845, longitude: -58.4447,
+    description: "Cancha de pádel cristal de última generación en pleno centro."
   },
   {
     id: "court-2", name: "Cancha Norte", owner_id: "owner-user-1",
-    location: "Calle Rivadavia 890, Córdoba", price_per_hour: 3800,
-    surface: "moqueta", indoor: false, amenities: ["vestuarios", "wifi"],
+    address: "Calle Rivadavia 890, Córdoba",
+    location: "Calle Rivadavia 890, Córdoba",
+    price_per_hour: 3800,
+    surface: "moqueta", indoor: false, is_covered: false,
+    amenities: ["Vestuarios", "Wifi"],
     image_url: "https://images.unsplash.com/photo-1617805273900-fcf8a83e4d70?w=800&fit=crop",
-    rating: 4.5, available: true, description: "Cancha al aire libre en excelente estado."
+    rating: 4.5, review_count: 8,
+    available: true, is_active: true,
+    latitude: -31.4167, longitude: -64.1850,
+    description: "Cancha al aire libre en excelente estado, ideal para clima templado."
   },
   {
     id: "court-3", name: "Club Palermo Paddle", owner_id: "owner-user-1",
-    location: "Palermo, Buenos Aires", price_per_hour: 5200,
-    surface: "cristal", indoor: true, amenities: ["vestuarios", "estacionamiento", "pro shop"],
+    address: "Thames 1825, Palermo, Buenos Aires",
+    location: "Palermo, Buenos Aires",
+    price_per_hour: 5200,
+    surface: "cristal", indoor: true, is_covered: true,
+    amenities: ["Vestuarios", "Estacionamiento", "Iluminación", "Bar"],
     image_url: "https://images.unsplash.com/photo-1528715471579-d1bcf0ba5e83?w=800&fit=crop",
-    rating: 4.9, available: true, description: "Club premium con 6 canchas de pádel."
+    rating: 4.9, review_count: 27,
+    available: true, is_active: true,
+    latitude: -34.5824, longitude: -58.4320,
+    description: "Club premium con 6 canchas de pádel cristal panorámico."
+  },
+  {
+    id: "court-4", name: "PadelZone Córdoba", owner_id: "owner-user-1",
+    address: "Av. Colón 2500, Córdoba",
+    location: "Córdoba Capital",
+    price_per_hour: 3200,
+    surface: "moqueta", indoor: true, is_covered: true,
+    amenities: ["Vestuarios", "Wifi", "Iluminación"],
+    image_url: "https://images.unsplash.com/photo-1529926706528-db9e5c0b0b58?w=800&fit=crop",
+    rating: 4.6, review_count: 15,
+    available: true, is_active: true,
+    latitude: -31.4200, longitude: -64.1800,
+    description: "Canchas techadas con iluminación LED profesional."
+  },
+  {
+    id: "court-5", name: "Padel Club Rosario", owner_id: "owner-user-1",
+    address: "Bv. Oroño 1100, Rosario",
+    location: "Rosario, Santa Fe",
+    price_per_hour: 3500,
+    surface: "cristal", indoor: false, is_covered: false,
+    amenities: ["Vestuarios", "Bar", "Estacionamiento"],
+    image_url: "https://images.unsplash.com/photo-1511886929837-354d827aae26?w=800&fit=crop",
+    rating: 4.3, review_count: 6,
+    available: true, is_active: true,
+    latitude: -32.9442, longitude: -60.6505,
+    description: "El mejor club de pádel de Rosario con 4 canchas panorámicas."
   }
 ];
 
 // ─── Posts de demostración ─────────────────────────────────────────────────
 const DEMO_POSTS = [
   {
-    id: "post-1", author_id: "user-sofia-1",
+    id: "post-1",
+    author_id: "user-sofia-1",
+    author_email: "sofia.rossi@padelzone.app",
+    author_name: "Sofía Rossi",
+    author_avatar_url: "https://images.unsplash.com/photo-1494790108377-be9c29b29330?w=400&h=400&fit=crop",
     content: "¡Qué partidazo hoy! 🎾🔥 Ganamos 6-2 6-3 con mi compañera Valentina. El nivel fue increíble.",
     image_url: "https://images.unsplash.com/photo-1554068865-24cecd4e34b8?w=800&fit=crop",
-    likes: 24, created_date: "2024-07-15T14:30:00Z", comments_count: 3
+    likes: ["lucas.benitez@padelzone.app", "demo@padelzone.app", "joaquin.peralta@padelzone.app"],
+    comments_count: 3,
+    created_date: "2024-07-15T14:30:00Z"
   },
   {
-    id: "post-2", author_id: "user-lucas-2",
+    id: "post-2",
+    author_id: "user-lucas-2",
+    author_email: "lucas.benitez@padelzone.app",
+    author_name: "Lucas Benítez",
+    author_avatar_url: "https://images.unsplash.com/photo-1507003211169-0a1dd7228f2d?w=400&h=400&fit=crop",
     content: "Nuevo récord personal en entrenamiento. 2 horas de víboras y bajadas de pared 💪 ¿Alguien se suma mañana a las 18hs en Palermo?",
     image_url: null,
-    likes: 15, created_date: "2024-07-14T18:00:00Z", comments_count: 5
+    likes: ["sofia.rossi@padelzone.app", "valentina.m@padelzone.app"],
+    comments_count: 5,
+    created_date: "2024-07-14T18:00:00Z"
   },
   {
-    id: "post-3", author_id: "user-valen-3",
+    id: "post-3",
+    author_id: "user-valen-3",
+    author_email: "valentina.m@padelzone.app",
+    author_name: "Valentina Morales",
+    author_avatar_url: "https://images.unsplash.com/photo-1534528741775-53994a69daeb?w=400&h=400&fit=crop",
     content: "📢 Abro inscripciones para el intensivo de julio. Grupos reducidos de 4 personas, 2hs de clase teórico-práctica. ¡Plazas limitadas!",
     image_url: "https://images.unsplash.com/photo-1617805273900-fcf8a83e4d70?w=800&fit=crop",
-    likes: 32, created_date: "2024-07-13T10:00:00Z", comments_count: 8
+    likes: ["lucas.benitez@padelzone.app", "demo@padelzone.app", "sofia.rossi@padelzone.app", "joaquin.peralta@padelzone.app"],
+    comments_count: 8,
+    created_date: "2024-07-13T10:00:00Z"
   },
   {
-    id: "post-4", author_id: "demo-user-1",
+    id: "post-4",
+    author_id: "demo-user-1",
+    author_email: "demo@padelzone.app",
+    author_name: "Martín Gómez",
+    author_avatar_url: "https://images.unsplash.com/photo-1472099645785-5658abf4ff4e?w=400&h=400&fit=crop",
     content: "Primera vez jugando en cancha de cristal. La diferencia con la moqueta es enorme. ¡Me encantó! 🎾",
     image_url: "https://images.unsplash.com/photo-1528715471579-d1bcf0ba5e83?w=800&fit=crop",
-    likes: 9, created_date: "2024-07-12T16:00:00Z", comments_count: 2
+    likes: ["sofia.rossi@padelzone.app"],
+    comments_count: 2,
+    created_date: "2024-07-12T16:00:00Z"
+  },
+  {
+    id: "post-5",
+    author_id: "user-joaquin-6",
+    author_email: "joaquin.peralta@padelzone.app",
+    author_name: "Joaquín Peralta",
+    author_avatar_url: "https://images.unsplash.com/photo-1500648767791-00dcc994a43e?w=400&h=400&fit=crop",
+    content: "Torneo interno este sábado a las 10hs. Faltan 2 parejas más. ¿Se apuntan? 🏆",
+    image_url: null,
+    likes: ["lucas.benitez@padelzone.app", "demo@padelzone.app"],
+    comments_count: 4,
+    created_date: "2024-07-11T09:00:00Z"
   }
 ];
 
@@ -213,6 +293,8 @@ const DEMO_BOOKINGS = [
 
 // ─── Motor de almacenamiento en localStorage ───────────────────────────────
 const STORAGE_KEY = 'padelzone_demo_db';
+const DB_VERSION = 3; // ← incrementar cuando cambie el schema de datos
+const DB_VERSION_KEY = 'padelzone_demo_db_version';
 
 function getDB() {
   try {
@@ -229,8 +311,16 @@ function saveDB(db) {
 }
 
 function initDB() {
+  // Si la versión del DB guardado no coincide, limpiar y recargar datos frescos
+  const savedVersion = parseInt(localStorage.getItem(DB_VERSION_KEY) || '0', 10);
+  if (savedVersion !== DB_VERSION) {
+    localStorage.removeItem(STORAGE_KEY);
+    localStorage.setItem(DB_VERSION_KEY, String(DB_VERSION));
+  }
+
   const existing = getDB();
   if (existing) return existing;
+
   const db = {
     User: DEMO_USERS.map(({ password: _, ...u }) => u),
     Court: DEMO_COURTS,
