@@ -367,21 +367,35 @@ const demoAuth = {
   },
 
   async loginViaEmailPassword(email, password) {
-    // Buscar en usuarios demo
-    const demoUser = DEMO_USERS.find(u => u.email.toLowerCase() === email.toLowerCase());
-    if (!demoUser) throw new Error('Usuario no encontrado. Verificá el correo electrónico.');
+    const emailNorm = (email || '').trim().toLowerCase();
+    const demoUser = DEMO_USERS.find(u => u.email.toLowerCase() === emailNorm);
 
-    if (password !== demoUser.password) {
-      throw new Error('Contraseña incorrecta.');
+    if (!demoUser) {
+      throw new Error(`Usuario "${emailNorm}" no encontrado. Verificá el correo electrónico.`);
     }
 
-    // Crear token simulado
-    const token = btoa(`${demoUser.email}:${Date.now()}`);
-    const { password: _, ...userWithoutPassword } = demoUser;
+    if (password !== demoUser.password) {
+      throw new Error('Contraseña incorrecta. Recordá que la contraseña es: demo123');
+    }
+
+    // Crear token simple (sin btoa para evitar problemas con caracteres)
+    const token = `demo_token_${demoUser.id}_${Date.now()}`;
+
+    // Construir objeto usuario sin el campo password
+    const userObj = {
+      id: demoUser.id,
+      email: demoUser.email,
+      full_name: demoUser.full_name,
+      role: demoUser.role,
+      level: demoUser.level,
+      bio: demoUser.bio,
+      avatar_url: demoUser.avatar_url,
+      created_date: demoUser.created_date
+    };
 
     setToken(token);
-    setSessionUser(userWithoutPassword);
-    return userWithoutPassword;
+    setSessionUser(userObj);
+    return userObj;
   },
 
   async register({ email, password, full_name, role }) {
